@@ -2,7 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 TOKEN = "8715059765:AAFYlCPl-4IZ-_Vow2kbTDiVyWq6MMdsy-c"
-ADMIN_ID = 123456789  # replace with YOUR Telegram user ID
+ADMIN_ID = 393655145  # replace with YOUR Telegram user ID
 
 CHANNEL = "https://t.me/cokfiko"
 BOT = "https://t.me/CofikoBot"
