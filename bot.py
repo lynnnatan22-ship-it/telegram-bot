@@ -8,6 +8,7 @@ CHANNEL_ID = "@cokfiko"
 CHANNEL_LINK = "https://t.me/cokfiko"
 BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
+
 # ---------------- START COMMAND ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -21,46 +22,46 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-# ---------------- SAFE CHANNEL POST ----------------
-async def post_to_channel(app, retries=3):
 
-    for attempt in range(retries):
-        try:
-            keyboard = [
-                [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
-                [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
-            ]
+# ---------------- CHANNEL POST (SAFE) ----------------
+async def post_to_channel(app):
 
-            await app.bot.send_message(
-                chat_id=CHANNEL_ID,
-                text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+    try:
+        keyboard = [
+            [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
+            [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
+        ]
 
-            print("✅ Channel post successful")
-            return
+        await app.bot.send_message(
+            chat_id=CHANNEL_ID,
+            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-        except Exception as e:
-            print(f"⚠️ Attempt {attempt+1} failed:", e)
-            await asyncio.sleep(3)
+        print("✅ Channel post sent")
 
-    print("❌ All attempts failed")
+    except Exception as e:
+        print("❌ Channel post failed:", e)
 
-# ---------------- STARTUP HANDLER ----------------
-async def on_startup(app):
-    await post_to_channel(app)
 
 # ---------------- MAIN ----------------
 def main():
+
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
 
-    # guaranteed startup execution
-    app.post_init(on_startup)
+    # SAFE startup (IMPORTANT FIX)
+    async def run_startup():
+        await post_to_channel(app)
+
+    # run startup BEFORE polling starts
+    app.job_queue.run_once(lambda ctx: asyncio.create_task(run_startup()), 1)
 
     print("Bot is running...")
+
     app.run_polling(drop_pending_updates=True)
+
 
 if __name__ == "__main__":
     main()
