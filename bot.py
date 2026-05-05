@@ -6,7 +6,7 @@ TOKEN = "8715059765:AAErHPw_S8C7JfyGvimnUcStmE9qPzi3V_Y"
 
 CHANNEL_ID = "@cokfiko"
 CHANNEL_LINK = "https://t.me/cokfiko"
-BOT_LINK = "https://t.me/cokfiko"
+BOT_LINK = "https://t.me/CofikoBot"
 
 
 # ---------------- START COMMAND ----------------
