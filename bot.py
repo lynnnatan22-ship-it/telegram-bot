@@ -1,4 +1,3 @@
-import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -9,7 +8,7 @@ CHANNEL_LINK = "https://t.me/cokfiko"
 BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
 
-# ---------------- START COMMAND ----------------
+# ---------------- START ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
@@ -23,7 +22,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# ---------------- CHANNEL POST (SAFE) ----------------
+# ---------------- CHANNEL POST (SAFE ONLY) ----------------
 async def post_to_channel(app):
 
     try:
@@ -51,12 +50,13 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
-    # SAFE startup (IMPORTANT FIX)
-    async def run_startup():
+    # SIMPLE SAFE STARTUP (NO JOBQUEUE, NO POST_INIT)
+    async def startup():
         await post_to_channel(app)
 
-    # run startup BEFORE polling starts
-    app.job_queue.run_once(lambda ctx: asyncio.create_task(run_startup()), 1)
+    # run AFTER bot starts safely
+    import asyncio
+    asyncio.get_event_loop().create_task(startup())
 
     print("Bot is running...")
 
