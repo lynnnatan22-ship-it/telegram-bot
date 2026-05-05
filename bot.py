@@ -1,69 +1,85 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
+# ================== CONFIG ==================
 TOKEN = "8715059765:AAFYlCPl-4IZ-_Vow2kbTDiVyWq6MMdsy-c"
-ADMIN_ID = 393655145  # replace with YOUR Telegram user ID
+ADMIN_ID = 393655145  # <-- replace with YOUR Telegram user ID
+CHANNEL_ID = "@cokfiko"
+BOT_LINK = "https://t.me/CofikoBot"
 
-CHANNEL = "https://t.me/cokfiko"
-BOT = "https://t.me/CofikoBot"
-
-# ---------- MAIN MENU ----------
+# ================== MENUS ==================
 def main_menu():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📢 Channel", url=CHANNEL)],
-        [InlineKeyboardButton("🤖 Bot", url=BOT)],
-        [InlineKeyboardButton("ℹ️ Info", callback_data="info")],
-        [InlineKeyboardButton("🔐 Admin", callback_data="admin")]
+        [InlineKeyboardButton("📢 Channel", url=CHANNEL_ID)],
+        [InlineKeyboardButton("🤖 Open Bot", url=BOT_LINK)],
+        [InlineKeyboardButton("📤 Post (Admin)", callback_data="post")],
+        [InlineKeyboardButton("ℹ️ Info", callback_data="info")]
     ])
 
-# ---------- BACK BUTTON ----------
 def back_menu():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="back")]
     ])
 
-# ---------- START ----------
+# ================== START ==================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Welcome to COKFIKO SYSTEM",
+        "👋 Welcome to COKFIKO Business Bot",
         reply_markup=main_menu()
     )
 
-# ---------- CALLBACK HANDLER ----------
+# ================== BUTTONS ==================
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     user_id = query.from_user.id
     await query.answer()
 
+    # INFO PAGE
     if query.data == "info":
         await query.edit_message_text(
-            "ℹ️ This is your advanced menu bot.\nBuilt for navigation.",
+            "ℹ️ This is your business control bot.\nUse buttons below.",
             reply_markup=back_menu()
         )
 
-    elif query.data == "admin":
-        if user_id == ADMIN_ID:
-            await query.edit_message_text(
-                "🔐 Admin Panel\n\nYou can extend this later (posts, stats, etc).",
-                reply_markup=back_menu()
-            )
-        else:
-            await query.edit_message_text(
-                "❌ Access denied",
-                reply_markup=main_menu()
-            )
-
+    # BACK
     elif query.data == "back":
         await query.edit_message_text(
             "🏠 Main Menu",
             reply_markup=main_menu()
         )
 
-# ---------- MAIN ----------
+    # ADMIN POST
+    elif query.data == "post":
+        if user_id != ADMIN_ID:
+            await query.edit_message_text("❌ Not authorized")
+            return
+
+        await context.bot.send_message(
+            chat_id=CHANNEL_ID,
+            text="🔥 NEW UPDATE FROM COKFIKO SYSTEM"
+        )
+
+        await query.edit_message_text("✅ Posted to channel", reply_markup=main_menu())
+
+# ================== COMMAND POST ==================
+async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.from_user.id != ADMIN_ID:
+        await update.message.reply_text("❌ No permission")
+        return
+
+    await context.bot.send_message(
+        chat_id=CHANNEL_ID,
+        text="🔥 MANUAL POST FROM ADMIN"
+    )
+
+    await update.message.reply_text("✅ Posted to channel")
+
+# ================== MAIN ==================
 def main():
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("post", post))
     app.add_handler(CallbackQueryHandler(button_handler))
 
     print("Bot running...")
