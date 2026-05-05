@@ -1,49 +1,50 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
+# ---------------- YOUR SETTINGS ----------------
 TOKEN = "8715059765:AAErHPw_S8C7JfyGvimnUcStmE9qPzi3V_Y"
 
 CHANNEL_ID = "@cokfiko"
 CHANNEL_LINK = "https://t.me/cokfiko"
-BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
+BOT_LINK = "https://t.me/cokfiko"
 
 
-# ---------------- START ----------------
+# ---------------- START COMMAND ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
-        [InlineKeyboardButton("🚀 Open Channel", url=CHANNEL_LINK)],
+        [InlineKeyboardButton("📢 Open Channel", url=CHANNEL_LINK)],
         [InlineKeyboardButton("🤖 Open Bot", url=BOT_LINK)]
     ]
 
     await update.message.reply_text(
-        "👋 Welcome to COKFIKO System\n\nChoose below 👇",
+        "👋 Welcome to COKFIKO System\n\nChoose an option below 👇",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
-# ---------------- CHANNEL POST ----------------
-async def send_channel_post(app):
+# ---------------- POST MESSAGE TO CHANNEL ----------------
+async def send_channel_message(app):
 
     try:
         keyboard = [
-            [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
+            [InlineKeyboardButton("🤖 Open Bot", url=BOT_LINK)],
             [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
         ]
 
         await app.bot.send_message(
             chat_id=CHANNEL_ID,
-            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below 👇",
+            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-        print("✅ Channel post sent")
+        print("✅ Channel message sent")
 
     except Exception as e:
-        print("❌ Error:", e)
+        print("❌ Error sending channel message:", e)
 
 
-# ---------------- MAIN ----------------
+# ---------------- MAIN BOT ----------------
 def main():
 
     app = Application.builder().token(TOKEN).build()
@@ -51,7 +52,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
 
     async def startup(app):
-        await send_channel_post(app)
+        await send_channel_message(app)
 
     app.post_init(startup)
 
