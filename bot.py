@@ -3,39 +3,49 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8715059765:AAErHPw_S8C7JfyGvimnUcStmE9qPzi3V_Y"
 
-CHANNEL_USERNAME = "@cokfiko"
+CHANNEL_ID = "@cokfiko"
 CHANNEL_LINK = "https://t.me/cokfiko"
+BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
 
-# ---------------- START COMMAND ----------------
+# ---------------- START ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton("🚀 Open Channel", url=CHANNEL_LINK)],
-        [InlineKeyboardButton("💬 Contact", url="https://t.me/yourusername")]
+        [InlineKeyboardButton("🤖 Open Bot Menu", url=BOT_LINK)]
     ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "👋 Welcome!\n\nClick below to continue 👇",
-        reply_markup=reply_markup
-    )
-
-
-# ---------------- POST BUTTON MESSAGE TO CHANNEL ----------------
-async def post_to_channel(app):
-
-    keyboard = [
-        [InlineKeyboardButton("🚀 Open Bot", url="https://t.me/YOUR_BOT_USERNAME")],
-        [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
-    ]
-
-    await app.bot.send_message(
-        chat_id=CHANNEL_USERNAME,
-        text="🔥 Welcome to COKFIKO Channel\n\nChoose an option below:",
+        "👋 Welcome!\n\nChoose an option below 👇",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+
+# ---------------- CHANNEL POST (FIXED RELIABILITY) ----------------
+async def post_to_channel(app):
+
+    try:
+        keyboard = [
+            [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
+            [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
+        ]
+
+        await app.bot.send_message(
+            chat_id=CHANNEL_ID,
+            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+        print("✅ Channel post sent successfully")
+
+    except Exception as e:
+        print("❌ Failed to post to channel:", e)
+
+
+# ---------------- STARTUP HANDLER (IMPORTANT FIX) ----------------
+async def on_startup(app):
+    await post_to_channel(app)
 
 
 # ---------------- MAIN ----------------
@@ -44,10 +54,7 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
-    # run once when bot starts
-    async def on_startup(app):
-        await post_to_channel(app)
-
+    # IMPORTANT: guaranteed startup execution
     app.post_init(on_startup)
 
     print("Bot is running...")
