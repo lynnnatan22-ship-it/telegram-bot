@@ -12,7 +12,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
 
     print("Bot is running...")
-    app.run_polling()
+  app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
     main()
