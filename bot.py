@@ -8,7 +8,7 @@ CHANNEL_LINK = "https://t.me/cokfiko"
 BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
 
-# ---------------- START ----------------
+# ---------------- START COMMAND ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
@@ -22,7 +22,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# ---------------- CHANNEL POST (SAFE ONLY) ----------------
+# ---------------- SEND CHANNEL MESSAGE ----------------
 async def post_to_channel(app):
 
     try:
@@ -33,14 +33,14 @@ async def post_to_channel(app):
 
         await app.bot.send_message(
             chat_id=CHANNEL_ID,
-            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
+            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below 👇",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-        print("✅ Channel post sent")
+        print("✅ Channel message sent")
 
     except Exception as e:
-        print("❌ Channel post failed:", e)
+        print("❌ Failed:", e)
 
 
 # ---------------- MAIN ----------------
@@ -50,11 +50,10 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
-    # SIMPLE SAFE STARTUP (NO JOBQUEUE, NO POST_INIT)
+    # SAFE STARTUP FIX (NO post_init)
     async def startup():
         await post_to_channel(app)
 
-    # run AFTER bot starts safely
     import asyncio
     asyncio.get_event_loop().create_task(startup())
 
