@@ -8,7 +8,7 @@ CHANNEL_LINK = "https://t.me/cokfiko"
 BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
 
-# ---------------- START COMMAND ----------------
+# ---------------- START ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
@@ -22,8 +22,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# ---------------- SEND CHANNEL MESSAGE ----------------
-async def post_to_channel(app):
+# ---------------- CHANNEL POST ----------------
+async def send_channel_post(app):
 
     try:
         keyboard = [
@@ -37,10 +37,10 @@ async def post_to_channel(app):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-        print("✅ Channel message sent")
+        print("✅ Channel post sent")
 
     except Exception as e:
-        print("❌ Failed:", e)
+        print("❌ Error:", e)
 
 
 # ---------------- MAIN ----------------
@@ -50,12 +50,10 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
-    # SAFE STARTUP FIX (NO post_init)
-    async def startup():
-        await post_to_channel(app)
+    async def startup(app):
+        await send_channel_post(app)
 
-    import asyncio
-    asyncio.get_event_loop().create_task(startup())
+    app.post_init(startup)
 
     print("Bot is running...")
 
