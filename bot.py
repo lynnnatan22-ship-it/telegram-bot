@@ -1,3 +1,4 @@
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -7,46 +8,47 @@ CHANNEL_ID = "@cokfiko"
 CHANNEL_LINK = "https://t.me/cokfiko"
 BOT_LINK = "https://t.me/YOUR_BOT_USERNAME"
 
-
-# ---------------- START ----------------
+# ---------------- START COMMAND ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton("🚀 Open Channel", url=CHANNEL_LINK)],
-        [InlineKeyboardButton("🤖 Open Bot Menu", url=BOT_LINK)]
+        [InlineKeyboardButton("🤖 Open Bot", url=BOT_LINK)]
     ]
 
     await update.message.reply_text(
-        "👋 Welcome!\n\nChoose an option below 👇",
+        "👋 Welcome to COKFIKO System\n\nChoose below 👇",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
+# ---------------- SAFE CHANNEL POST ----------------
+async def post_to_channel(app, retries=3):
 
-# ---------------- CHANNEL POST (FIXED RELIABILITY) ----------------
-async def post_to_channel(app):
+    for attempt in range(retries):
+        try:
+            keyboard = [
+                [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
+                [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
+            ]
 
-    try:
-        keyboard = [
-            [InlineKeyboardButton("🚀 Open Bot", url=BOT_LINK)],
-            [InlineKeyboardButton("📢 Join Channel", url=CHANNEL_LINK)]
-        ]
+            await app.bot.send_message(
+                chat_id=CHANNEL_ID,
+                text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
 
-        await app.bot.send_message(
-            chat_id=CHANNEL_ID,
-            text="🔥 COKFIKO SYSTEM ONLINE\n\nTap below to continue 👇",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+            print("✅ Channel post successful")
+            return
 
-        print("✅ Channel post sent successfully")
+        except Exception as e:
+            print(f"⚠️ Attempt {attempt+1} failed:", e)
+            await asyncio.sleep(3)
 
-    except Exception as e:
-        print("❌ Failed to post to channel:", e)
+    print("❌ All attempts failed")
 
-
-# ---------------- STARTUP HANDLER (IMPORTANT FIX) ----------------
+# ---------------- STARTUP HANDLER ----------------
 async def on_startup(app):
     await post_to_channel(app)
-
 
 # ---------------- MAIN ----------------
 def main():
@@ -54,12 +56,11 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
 
-    # IMPORTANT: guaranteed startup execution
+    # guaranteed startup execution
     app.post_init(on_startup)
 
     print("Bot is running...")
     app.run_polling(drop_pending_updates=True)
-
 
 if __name__ == "__main__":
     main()
