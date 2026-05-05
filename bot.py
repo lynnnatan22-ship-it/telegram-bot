@@ -1,13 +1,12 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# ---------------- SETTINGS ----------------
 TOKEN = "8715059765:AAFYlCPl-4IZ-_Vow2kbTDiVyWq6MMdsy-c"
+
 BOT_LINK = "https://t.me/CofikoBot"
 CHANNEL_LINK = "https://t.me/cokfiko"
 
 
-# ---------------- START MENU ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
@@ -16,14 +15,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     await update.message.reply_text(
-        "👋 Welcome!\n\nChoose an option:",
+        "👋 Bot is working\n\nChoose:",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
-# ---------------- MAIN ----------------
 def main():
-
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
