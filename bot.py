@@ -3,7 +3,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Cont
 
 import os
 
-TOKEN = "8715059765:AAEAgUVxUiQjT7qlIH_oCkzcYEZfFP3J_PI"
+TOKEN = "8715059765:AAG5Vx5FaDcL2933qUR6VmXu2xLmOtfGb-k"
 ADMIN_ID = 393655145
 CHANNEL_ID = "@cokfiko"
 BOT_LINK = "https://t.me/CofikoBot"
